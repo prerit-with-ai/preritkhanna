@@ -1,0 +1,122 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const errands = await getCollection('errands');
+  return errands.map((errand) => ({
+    params: { slug: errand.id },
+    props: { errand },
+  }));
+}
+
+interface Props {
+  errand: CollectionEntry<'errands'>;
+}
+
+const { errand } = Astro.props;
+const { Content } = await render(errand);
+const { title, tagline, status, started, links, updates } = errand.data;
+
+const startedLabel = started.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const sortedUpdates = updates
+  ? [...updates].sort((a, b) => b.date.valueOf() - a.date.valueOf())
+  : [];
+---
+
+<Base title={`${title} — Fool's Errand`} description={tagline}>
+  <p class="small"><a href="/">← all errands</a></p>
+
+  <header>
+    <h1>{title}</h1>
+    <p class="lede">{tagline}</p>
+    <p class="meta small muted">
+      <span class={`status status-${status}`}>{status}</span>
+      <span> · started {startedLabel}</span>
+    </p>
+  </header>
+
+  <hr />
+
+  <article>
+    <Content />
+  </article>
+
+  {
+    links && links.length > 0 && (
+      <section>
+        <h2>Links</h2>
+        <ul>
+          {links.map((link) => (
+            <li>
+              <a href={link.url}>{link.label}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    sortedUpdates.length > 0 && (
+      <section>
+        <h2>Updates</h2>
+        <ul class="updates">
+          {sortedUpdates.map((u) => (
+            <li>
+              <span class="small muted">
+                {u.date.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </span>
+              <p>{u.note}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</Base>
+
+<style>
+  .lede {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    color: var(--muted);
+    margin: 0.5rem 0 0.75rem;
+  }
+  .meta {
+    margin: 0;
+  }
+  .status {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+  }
+  .status-cooking,
+  .status-live {
+    color: var(--accent);
+  }
+  .updates {
+    list-style: none;
+    padding: 0;
+  }
+  .updates li {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .updates li:last-child {
+    border-bottom: 0;
+  }
+  .updates p {
+    margin: 0.25rem 0 0;
+  }
+</style>
