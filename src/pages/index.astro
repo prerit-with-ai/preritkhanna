@@ -1,17 +1,25 @@
 ---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ErrandCard from '../components/ErrandCard.astro';
 
+const errands = (await getCollection('errands')).sort(
+  (a, b) => b.data.started.valueOf() - a.data.started.valueOf()
+);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base title="Prerit Khanna — Fool's Errand">
+  <header>
+    <h1>Fool's Errand</h1>
+    <p class="muted">
+      A public log of attempts by Prerit Khanna. Some serious, some absurd, some
+      abandoned. Each one is an errand.
+    </p>
+  </header>
+
+  <hr />
+
+  <section>
+    {errands.map((errand) => <ErrandCard errand={errand} />)}
+  </section>
+</Base>

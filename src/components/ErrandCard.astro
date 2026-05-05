@@ -1,0 +1,62 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  errand: CollectionEntry<'errands'>;
+}
+
+const { errand } = Astro.props;
+const { title, tagline, status, started } = errand.data;
+const startedLabel = started.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+});
+---
+
+<article class="errand-card">
+  <a href={`/errands/${errand.id}/`}>
+    <h2>{title}</h2>
+    <p class="tagline">{tagline}</p>
+    <p class="meta small muted">
+      <span class={`status status-${status}`}>{status}</span>
+      <span> · </span>
+      <span>{startedLabel}</span>
+    </p>
+  </a>
+</article>
+
+<style>
+  .errand-card {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .errand-card:last-child {
+    border-bottom: 0;
+  }
+  .errand-card a {
+    text-decoration: none;
+    display: block;
+  }
+  .errand-card h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.375rem;
+  }
+  .tagline {
+    margin: 0 0 0.75rem;
+    color: var(--fg);
+  }
+  .meta {
+    margin: 0;
+  }
+  .status {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.7rem;
+  }
+  .status-cooking {
+    color: var(--accent);
+  }
+  .status-live {
+    color: var(--accent);
+  }
+</style>
