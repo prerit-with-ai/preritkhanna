@@ -2,7 +2,7 @@
 
 The current phase's product requirements. Rewritten when each phase ships.
 
-For the long-arc *why*, see [VISION.md](./VISION.md). For phase headlines, see [ROADMAP.md](./ROADMAP.md).
+For the long-arc *why*, see [VISION.md](./VISION.md). For phase headlines, see [ROADMAP.md](./ROADMAP.md). For the visual system, see [DESIGN.md](./DESIGN.md) — v1 must follow its tokens.
 
 ---
 

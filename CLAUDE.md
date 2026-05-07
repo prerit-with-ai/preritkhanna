@@ -6,6 +6,7 @@ For context, also read:
 
 - [VISION.md](./VISION.md) — the why
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — the technical spine
+- [DESIGN.md](./DESIGN.md) — the visual system
 - [WORKFLOW.md](./WORKFLOW.md) — the operating loop
 - [PRD.md](./PRD.md) — the current phase's scope
 - [ROADMAP.md](./ROADMAP.md) — what's coming

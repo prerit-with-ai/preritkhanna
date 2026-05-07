@@ -4,7 +4,7 @@ The working agreement for AI coding agents (Claude Code, Codex, Cursor, Aider, a
 
 **Read first:** [VISION.md](./VISION.md) — the why. This doc is the how.
 
-**Then read:** [ARCHITECTURE.md](./ARCHITECTURE.md) for the technical spine, [WORKFLOW.md](./WORKFLOW.md) for the operating loop, [PRD.md](./PRD.md) for the current phase's scope, [ROADMAP.md](./ROADMAP.md) for what's coming.
+**Then read:** [ARCHITECTURE.md](./ARCHITECTURE.md) for the technical spine, [DESIGN.md](./DESIGN.md) for the visual system, [WORKFLOW.md](./WORKFLOW.md) for the operating loop, [PRD.md](./PRD.md) for the current phase's scope, [ROADMAP.md](./ROADMAP.md) for what's coming.
 
 ---
 
