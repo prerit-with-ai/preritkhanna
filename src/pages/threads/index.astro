@@ -1,0 +1,68 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const threads = (await getCollection('threads'))
+  .filter((t) => t.data.status !== 'closed')
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+---
+
+<Base title="Threads — Prerit Khanna">
+  <p class="small"><a href="/">← home</a></p>
+
+  <header>
+    <h1>Threads</h1>
+    <p class="lede">Domains I keep pulling on. Each thread has its own essay and aggregates everything tagged with it.</p>
+  </header>
+
+  <hr />
+
+  <section>
+    <ul class="thread-list">
+      {threads.map((t) => (
+        <li>
+          <a href={`/threads/${t.data.slug}/`}>
+            <h2>{t.data.title}</h2>
+          </a>
+          <p class="meta small muted">
+            <span class={`status status-${t.data.status}`}>{t.data.status}</span>
+          </p>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .lede {
+    font-family: var(--serif);
+    font-size: var(--type-lg);
+    color: var(--muted);
+    margin: var(--space-2) 0 0;
+  }
+  .thread-list {
+    list-style: none;
+    padding: 0;
+  }
+  .thread-list > li {
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .thread-list > li:last-child {
+    border-bottom: 0;
+  }
+  .thread-list h2 {
+    margin: 0;
+    font-size: var(--type-xl);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 3px;
+  }
+  .thread-list a {
+    text-decoration: none;
+  }
+  .thread-list a:hover h2 {
+    text-decoration-color: var(--accent);
+  }
+  .meta { margin: var(--space-1) 0 0; }
+</style>

@@ -1,12 +1,13 @@
 ---
 import '../styles/global.css';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title: string;
   description?: string;
 }
 
-const { title, description = "Prerit Khanna's public log of attempts." } = Astro.props;
+const { title, description = "Prerit Khanna's notebook." } = Astro.props;
 ---
 
 <!doctype html>
@@ -20,8 +21,10 @@ const { title, description = "Prerit Khanna's public log of attempts." } = Astro
     <title>{title}</title>
   </head>
   <body>
-    <main>
+    <a href="#content" class="skip-link">Skip to content</a>
+    <main id="content">
       <slot />
+      <Footer />
     </main>
   </body>
 </html>

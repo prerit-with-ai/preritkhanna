@@ -8,7 +8,9 @@ const errands = defineCollection({
     started: z.date(),
     status: z.enum(['cooking', 'live', 'shipped', 'abandoned', 'paused']),
     tagline: z.string(),
+    threads: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
+    looking_for: z.string().optional(),
     links: z
       .array(
         z.object({
@@ -28,4 +30,28 @@ const errands = defineCollection({
   }),
 });
 
-export const collections = { errands };
+const essays = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/essays' }),
+  schema: z.object({
+    title: z.string(),
+    date: z.date(),
+    last_updated: z.date().optional(),
+    status: z.enum(['draft', 'published']),
+    dek: z.string().optional(),
+    threads: z.array(z.string()).optional(),
+    tags: z.array(z.string()).optional(),
+  }),
+});
+
+const threads = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/threads' }),
+  schema: z.object({
+    title: z.string(),
+    slug: z.string(),
+    started: z.date(),
+    status: z.enum(['active', 'dormant', 'closed']),
+    related: z.array(z.string()).optional(),
+  }),
+});
+
+export const collections = { errands, essays, threads };

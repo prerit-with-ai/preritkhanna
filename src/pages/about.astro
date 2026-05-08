@@ -1,0 +1,130 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="About — Prerit Khanna">
+  <p class="small"><a href="/">← home</a></p>
+
+  <header>
+    <h1>About</h1>
+    <p class="lede">Who, where from, what I'm trying to be.</p>
+  </header>
+
+  <hr />
+
+  <section id="origin">
+    <h2>Origin</h2>
+    <p>
+      <em>[Dummy content — replace with the real origin essay.]</em>
+    </p>
+    <p>
+      I'm Prerit Khanna. This site is a notebook with many sections — projects
+      in motion, essays, threads I keep pulling on, books worth pressing into
+      your hand. It exists because the alternative — picking one identity and
+      pretending the rest don't exist — got tiring.
+    </p>
+    <p>
+      The short version: I want to be good at several things over a long
+      enough time that the breadth becomes real depth. Anime taught me to
+      state the ambition flatly. Da Vinci taught me to be patient with it.
+      Most days I'm somewhere between those two.
+    </p>
+  </section>
+
+  <section id="beliefs">
+    <h2>Beliefs</h2>
+    <p><em>[Dummy — replace with the real ones.]</em></p>
+    <ul>
+      <li>Build first; depth comes after, never before.</li>
+      <li>The unfinished is part of the work.</li>
+      <li>Earnestness, properly handled, is uncool. That's the point.</li>
+      <li>Slowness is a value, not a failure mode.</li>
+      <li>Most things worth doing take longer than the impatient version of yourself can stand.</li>
+    </ul>
+  </section>
+
+  <section id="influences">
+    <h2>Influences</h2>
+    <p>
+      Three figures define the shape of the ambition: <strong>Naruto</strong>,
+      <strong>Luffy</strong>, and <strong>Leonardo da Vinci</strong>. What
+      they share is unembarrassed wanting. None of them perform coolness.
+      None of them couch their ambition. They're all in motion, all earnest,
+      all outwardly trying.
+    </p>
+    <p>
+      Five additional figures whose work models pieces of this:
+    </p>
+    <ul>
+      <li><strong>Richard Feynman</strong> — playful polymath, foundations-from-scratch, willing to look stupid in pursuit of understanding.</li>
+      <li><strong>Anthony Bourdain</strong> — earned breadth across food, writing, travel, culture; comedy and seriousness in the same sentence.</li>
+      <li><strong>Maggie Appleton</strong> — the canonical polymath digital garden as form. Direct study material for what this site can be.</li>
+      <li><strong>Patrick Collison</strong> — founder-as-intellectual; public reading lists; cross-domain curiosity made habit.</li>
+      <li><strong>Brian Eno</strong> — generative across forms; <em>A Year With Swollen Appendices</em> as the model of a polymath's working diary.</li>
+    </ul>
+  </section>
+
+  <section id="reversals">
+    <h2>Reversals</h2>
+    <p><em>[Dummy — replace with the real ones.]</em></p>
+    <p>A running list of "I changed my mind about X."</p>
+    <ul>
+      <li><em>Used to think</em> personal sites were vanity. <em>Now think</em> they're how you keep the long arc honest.</li>
+      <li><em>Used to think</em> credentials were the prerequisite for serious work. <em>Now think</em> the work itself is the credential, and starting before you feel ready is the whole game.</li>
+    </ul>
+  </section>
+
+  <section id="acknowledgments">
+    <h2>Acknowledgments</h2>
+    <p><em>[Dummy — replace with real names, with permission.]</em></p>
+    <p>
+      Real humans who saw something in me before there was much to see. To
+      be filled in carefully, with their permission, when this section is
+      written for real.
+    </p>
+  </section>
+
+  <section id="faq">
+    <h2>FAQ</h2>
+    <p class="muted small">Empty at launch. Questions earn their place by being asked more than once.</p>
+  </section>
+
+  <section id="colophon">
+    <h2>Colophon</h2>
+    <p>
+      The site is built with <a href="https://astro.build">Astro</a> and
+      hosted on <a href="https://pages.cloudflare.com">Cloudflare Pages</a>.
+      Content lives as markdown files in <a href="https://github.com/prerit-with-ai/preritkhanna">a public git repository</a>,
+      validated at build time by Zod schemas. There is no CMS, no database,
+      no analytics, no JavaScript on the page.
+    </p>
+    <p>
+      Type is set in the system serif stack (Iowan Old Style on macOS,
+      Palatino Linotype on Windows, Charter as fallback) at 17px with a
+      1.6 line-height. Sans-serif uses the system UI stack. No web fonts
+      are loaded. The accent color is a burnt sienna, used sparingly. Dark
+      mode follows <code>prefers-color-scheme</code>.
+    </p>
+    <p>
+      The site is designed to last decades. URLs are stable. Markdown is
+      portable. If Astro disappears, the content moves to whatever's next
+      with no rewriting.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .lede {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: var(--type-xl);
+    color: var(--muted);
+    margin: var(--space-2) 0 0;
+  }
+  section {
+    margin-top: var(--space-7);
+  }
+  section h2 {
+    margin-top: 0;
+  }
+</style>

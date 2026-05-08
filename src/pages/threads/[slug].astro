@@ -1,0 +1,97 @@
+---
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const threads = await getCollection('threads');
+  return threads.map((thread) => ({
+    params: { slug: thread.data.slug },
+    props: { thread },
+  }));
+}
+
+interface Props {
+  thread: CollectionEntry<'threads'>;
+}
+
+const { thread } = Astro.props;
+const { Content } = await render(thread);
+const { title, slug, status, related } = thread.data;
+
+const errands = (await getCollection('errands'))
+  .filter((e) => e.data.threads?.includes(slug))
+  .sort((a, b) => b.data.started.valueOf() - a.data.started.valueOf());
+
+const essays = (await getCollection('essays'))
+  .filter((e) => e.data.threads?.includes(slug))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const allThreads = await getCollection('threads');
+const relatedThreads = related
+  ? allThreads.filter((t) => related.includes(t.data.slug))
+  : [];
+---
+
+<Base title={`${title} — Threads`}>
+  <p class="small"><a href="/threads/">← all threads</a></p>
+
+  <header>
+    <h1>{title}</h1>
+    <p class="meta small muted">
+      <span class={`status status-${status}`}>{status}</span>
+    </p>
+  </header>
+
+  <hr />
+
+  <article>
+    <Content />
+  </article>
+
+  {(errands.length > 0 || essays.length > 0) && <hr />}
+
+  {errands.length > 0 && (
+    <section>
+      <h2>Errands</h2>
+      <ul>
+        {errands.map((e) => (
+          <li>
+            <a href={`/errands/${e.id}/`}>{e.data.title}</a>
+            <span class="muted small"> — {e.data.tagline}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {essays.length > 0 && (
+    <section>
+      <h2>Essays</h2>
+      <ul>
+        {essays.map((e) => (
+          <li>
+            <a href={`/essays/${e.id}/`}>{e.data.title}</a>
+            {e.data.dek && <span class="muted small"> — {e.data.dek}</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {relatedThreads.length > 0 && (
+    <p class="related small muted">
+      Related: {relatedThreads.map((t, i) => (
+        <>
+          {i > 0 && <span> · </span>}
+          <a href={`/threads/${t.data.slug}/`}>{t.data.title}</a>
+        </>
+      ))}
+    </p>
+  )}
+</Base>
+
+<style>
+  .meta { margin: 0; }
+  .related { margin-top: var(--space-7); }
+</style>

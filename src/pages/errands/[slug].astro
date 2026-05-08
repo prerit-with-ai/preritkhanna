@@ -17,7 +17,7 @@ interface Props {
 
 const { errand } = Astro.props;
 const { Content } = await render(errand);
-const { title, tagline, status, started, links, updates } = errand.data;
+const { title, tagline, status, started, threads, looking_for, links, updates } = errand.data;
 
 const startedLabel = started.toLocaleDateString('en-US', {
   year: 'numeric',
@@ -31,9 +31,19 @@ const sortedUpdates = updates
 ---
 
 <Base title={`${title} — Fool's Errand`} description={tagline}>
-  <p class="small"><a href="/">← all errands</a></p>
+  <p class="small"><a href="/errands/">← all errands</a></p>
 
   <header>
+    {threads && threads.length > 0 && (
+      <p class="small muted threads">
+        Threads: {threads.map((t, i) => (
+          <>
+            {i > 0 && <span> · </span>}
+            <a href={`/threads/${t}/`}>{t}</a>
+          </>
+        ))}
+      </p>
+    )}
     <h1>{title}</h1>
     <p class="lede">{tagline}</p>
     <p class="meta small muted">
@@ -47,6 +57,13 @@ const sortedUpdates = updates
   <article>
     <Content />
   </article>
+
+  {looking_for && (
+    <aside class="looking-for">
+      <p class="small sans muted">Looking for</p>
+      <p>{looking_for}</p>
+    </aside>
+  )}
 
   {
     links && links.length > 0 && (
@@ -87,36 +104,39 @@ const sortedUpdates = updates
 </Base>
 
 <style>
+  .threads {
+    margin: 0 0 var(--space-3);
+  }
   .lede {
     font-family: var(--serif);
-    font-size: 1.25rem;
+    font-style: italic;
+    font-size: var(--type-xl);
     color: var(--muted);
-    margin: 0.5rem 0 0.75rem;
+    margin: var(--space-2) 0 var(--space-3);
   }
   .meta {
     margin: 0;
   }
-  .status {
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.7rem;
+  .looking-for {
+    border-left: 2px solid var(--accent);
+    padding: var(--space-3) 0 var(--space-3) var(--space-4);
+    margin: var(--space-6) 0;
   }
-  .status-cooking,
-  .status-live {
-    color: var(--accent);
+  .looking-for p {
+    margin: var(--space-1) 0 0;
   }
   .updates {
     list-style: none;
     padding: 0;
   }
   .updates li {
-    padding: 1rem 0;
+    padding: var(--space-4) 0;
     border-bottom: 1px solid var(--rule);
   }
   .updates li:last-child {
     border-bottom: 0;
   }
   .updates p {
-    margin: 0.25rem 0 0;
+    margin: var(--space-1) 0 0;
   }
 </style>

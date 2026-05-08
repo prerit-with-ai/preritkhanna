@@ -1,0 +1,68 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const calls = (await getCollection('errands'))
+  .filter((e) => e.data.looking_for && (e.data.status === 'cooking' || e.data.status === 'live'))
+  .sort((a, b) => b.data.started.valueOf() - a.data.started.valueOf());
+---
+
+<Base title="Crew Calls — The Guild" description="Open roles on errands in motion.">
+  <p class="small"><a href="/guild/">← The Guild</a></p>
+
+  <header>
+    <h1>Crew Calls</h1>
+    <p class="lede">Open roles on errands in motion. Auto-aggregated from the projects themselves.</p>
+  </header>
+
+  <hr />
+
+  {calls.length === 0 ? (
+    <article>
+      <p class="muted">
+        No open calls right now. Check back, or skip the line and email
+        <a href="mailto:preritandai@gmail.com"> preritandai@gmail.com</a> with
+        what you'd want to work on together.
+      </p>
+    </article>
+  ) : (
+    <ul class="call-list">
+      {calls.map((e) => (
+        <li>
+          <a href={`/errands/${e.id}/`}><h2>{e.data.title}</h2></a>
+          <p class="tagline muted">{e.data.tagline}</p>
+          <p class="ask">{e.data.looking_for}</p>
+        </li>
+      ))}
+    </ul>
+  )}
+</Base>
+
+<style>
+  .lede {
+    font-family: var(--serif);
+    font-size: var(--type-lg);
+    color: var(--muted);
+    margin: var(--space-2) 0 0;
+  }
+  .call-list {
+    list-style: none;
+    padding: 0;
+  }
+  .call-list > li {
+    padding: var(--space-5) 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .call-list > li:last-child { border-bottom: 0; }
+  .call-list a { text-decoration: none; }
+  .call-list h2 {
+    margin: 0 0 var(--space-2);
+    font-size: var(--type-xl);
+  }
+  .tagline { margin: 0 0 var(--space-3); font-style: italic; }
+  .ask {
+    border-left: 2px solid var(--accent);
+    padding-left: var(--space-4);
+    margin: 0;
+  }
+</style>

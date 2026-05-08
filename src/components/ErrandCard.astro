@@ -27,7 +27,7 @@ const startedLabel = started.toLocaleDateString('en-US', {
 
 <style>
   .errand-card {
-    padding: 1.5rem 0;
+    padding: var(--space-5) 0;
     border-bottom: 1px solid var(--rule);
   }
   .errand-card:last-child {
@@ -37,26 +37,23 @@ const startedLabel = started.toLocaleDateString('en-US', {
     text-decoration: none;
     display: block;
   }
+  .errand-card a:hover h2 {
+    text-decoration-color: var(--accent);
+  }
   .errand-card h2 {
-    margin: 0 0 0.5rem;
-    font-size: 1.375rem;
+    margin: 0 0 var(--space-2);
+    font-size: var(--type-xl);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    transition: text-decoration-color 0.15s ease;
   }
   .tagline {
-    margin: 0 0 0.75rem;
+    margin: 0 0 var(--space-3);
     color: var(--fg);
   }
   .meta {
     margin: 0;
-  }
-  .status {
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.7rem;
-  }
-  .status-cooking {
-    color: var(--accent);
-  }
-  .status-live {
-    color: var(--accent);
   }
 </style>

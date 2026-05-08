@@ -1,0 +1,24 @@
+---
+const today = new Date().toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+<footer>
+  <p class="small muted">
+    preritkhanna.com · last built {today} · <a href="/about/#colophon">colophon</a>
+  </p>
+</footer>
+
+<style>
+  footer {
+    margin-top: var(--space-9);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--rule);
+  }
+  footer p {
+    margin: 0;
+  }
+</style>

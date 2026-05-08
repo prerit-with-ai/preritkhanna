@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import ErrandCard from '../../components/ErrandCard.astro';
+
+const errands = (await getCollection('errands')).sort(
+  (a, b) => b.data.started.valueOf() - a.data.started.valueOf()
+);
+---
+
+<Base title="Fool's Errand — Prerit Khanna">
+  <p class="small"><a href="/">← home</a></p>
+
+  <header>
+    <h1>Fool's Errand</h1>
+    <p class="lede">Projects in motion. Some serious, some absurd, some abandoned. Each one is an errand.</p>
+  </header>
+
+  <hr />
+
+  <section>
+    {errands.map((errand) => <ErrandCard errand={errand} />)}
+  </section>
+</Base>
+
+<style>
+  .lede {
+    font-family: var(--serif);
+    font-size: var(--type-lg);
+    color: var(--muted);
+    margin: var(--space-2) 0 0;
+  }
+</style>

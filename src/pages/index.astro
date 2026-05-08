@@ -1,25 +1,95 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
-import ErrandCard from '../components/ErrandCard.astro';
 
-const errands = (await getCollection('errands')).sort(
-  (a, b) => b.data.started.valueOf() - a.data.started.valueOf()
-);
+const modes = [
+  { href: '/about/', label: 'About' },
+  { href: '/errands/', label: "Fool's Errand" },
+  { href: '/essays/', label: 'Essays' },
+  { href: '/threads/', label: 'Threads' },
+  { href: '/guild/', label: 'The Guild' },
+  { href: '/now/', label: 'Now' },
+];
 ---
 
-<Base title="Prerit Khanna — Fool's Errand">
-  <header>
-    <h1>Fool's Errand</h1>
-    <p class="muted">
-      A public log of attempts by Prerit Khanna. Some serious, some absurd, some
-      abandoned. Each one is an errand.
+<Base title="Prerit Khanna" description="A notebook by Prerit Khanna.">
+  <header class="cover">
+    <h1>Prerit Khanna</h1>
+
+    <p class="intro">
+      A notebook with many sections — projects in motion, essays, threads I
+      keep pulling on, books worth pressing into your hand, quotes I can't
+      shake. I'm trying to be many things at once: tech, comedy, science,
+      philosophy, theology, history, and more as they pull at me. Rather than
+      pick one identity for the top of the page, I figured I'd show the work.
+      Patron saints are Da Vinci, Naruto, and Luffy — slowness, earnestness,
+      and a refusal to hedge the wanting. The unfinished is visible on purpose.
+    </p>
+
+    <p class="currently">
+      Currently: restructuring this site from a single-section project log
+      into the notebook it should be.
     </p>
   </header>
 
   <hr />
 
-  <section>
-    {errands.map((errand) => <ErrandCard errand={errand} />)}
+  <nav class="modes" aria-label="Sections">
+    {modes.map((m, i) => (
+      <>
+        {i > 0 && <span class="sep" aria-hidden="true"> · </span>}
+        <a href={m.href}>{m.label}</a>
+      </>
+    ))}
+  </nav>
+
+  <hr />
+
+  <section class="if-new">
+    <h2>If you're new</h2>
+    <p class="muted small">A short on-ramp. Updated as the body grows.</p>
+    <ul>
+      <li>
+        <a href="/errands/2026-05-ship-v0/">Ship v0 of preritkhanna.com</a>
+        <span class="muted"> — the site shipping itself, as the first errand.</span>
+      </li>
+    </ul>
   </section>
 </Base>
+
+<style>
+  .cover h1 {
+    font-size: var(--type-hero);
+    margin: 0 0 var(--space-5);
+  }
+  @media (max-width: 768px) {
+    .cover h1 {
+      font-size: 2.25rem;
+    }
+  }
+  .intro {
+    font-size: var(--type-lg);
+    margin: 0 0 var(--space-4);
+  }
+  .currently {
+    font-style: italic;
+    color: var(--muted);
+    font-size: var(--type-lg);
+    margin: var(--space-4) 0 0;
+  }
+  .modes {
+    font-family: var(--sans);
+    font-size: var(--type-base);
+    line-height: 2;
+  }
+  .modes .sep {
+    color: var(--muted);
+  }
+  .if-new h2 {
+    font-size: var(--type-xl);
+    margin-top: 0;
+  }
+  .if-new ul {
+    list-style: none;
+    padding: 0;
+  }
+</style>

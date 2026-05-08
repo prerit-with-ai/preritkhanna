@@ -4,9 +4,32 @@
   --muted: #6b6b6b;
   --rule: #e6e2da;
   --accent: #8a4b1f;
-  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Source Serif Pro', Georgia, serif;
+
+  --serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Source Serif Pro', Charter, Georgia, serif;
   --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --type-xs: 0.875rem;
+  --type-sm: 1rem;
+  --type-base: 1rem;
+  --type-lg: 1.125rem;
+  --type-xl: 1.25rem;
+  --type-2xl: 1.5rem;
+  --type-3xl: 2.25rem;
+  --type-hero: 3rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
   --measure: 40rem;
+  --measure-wide: 48rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,7 +49,7 @@
 html {
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--sans);
+  font-family: var(--serif);
   font-size: 17px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -42,7 +65,13 @@ body {
 main {
   max-width: var(--measure);
   margin: 0 auto;
-  padding: 4rem 1.5rem 6rem;
+  padding: var(--space-8) var(--space-5) var(--space-9);
+}
+
+@media (max-width: 768px) {
+  main {
+    padding: 2.5rem 1rem 4rem;
+  }
 }
 
 h1, h2, h3, h4 {
@@ -50,20 +79,28 @@ h1, h2, h3, h4 {
   font-weight: 500;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  margin: 2rem 0 1rem;
+  margin: var(--space-6) 0 var(--space-4);
 }
 
 h1 {
-  font-size: 2.25rem;
+  font-size: var(--type-3xl);
   margin-top: 0;
 }
 
 h2 {
-  font-size: 1.5rem;
+  font-size: var(--type-2xl);
+}
+
+h3 {
+  font-size: var(--type-xl);
+}
+
+@media (max-width: 768px) {
+  h1 { font-size: 1.875rem; }
 }
 
 p {
-  margin: 1rem 0;
+  margin: var(--space-4) 0;
 }
 
 a {
@@ -79,14 +116,20 @@ a:hover {
   text-decoration-color: var(--accent);
 }
 
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 hr {
   border: 0;
   border-top: 1px solid var(--rule);
-  margin: 3rem 0;
+  margin: var(--space-7) 0;
 }
 
 code {
-  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--mono);
   font-size: 0.9em;
   background: var(--rule);
   padding: 0.1em 0.35em;
@@ -103,14 +146,23 @@ pre {
 pre code {
   background: none;
   padding: 0;
+  font-size: 1em;
 }
 
 blockquote {
   border-left: 2px solid var(--rule);
-  margin: 1.5rem 0;
+  margin: var(--space-5) 0;
   padding: 0 0 0 1.25rem;
   color: var(--muted);
   font-style: italic;
+}
+
+ul, ol {
+  padding-left: 1.25rem;
+}
+
+li {
+  margin: var(--space-2) 0;
 }
 
 .muted {
@@ -118,5 +170,66 @@ blockquote {
 }
 
 .small {
-  font-size: 0.875rem;
+  font-family: var(--sans);
+  font-size: var(--type-xs);
+  line-height: 1.4;
+}
+
+.sans {
+  font-family: var(--sans);
+}
+
+.status {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15em 0.4em;
+}
+
+.status-cooking,
+.status-live,
+.status-doing,
+.status-reading,
+.status-active { color: var(--accent); }
+
+.status-paused,
+.status-eyeing,
+.status-draft,
+.status-dormant { color: var(--muted); }
+
+.status-shipped,
+.status-done,
+.status-finished,
+.status-published { color: var(--fg); }
+
+.status-abandoned,
+.status-let-go,
+.status-dnf,
+.status-closed {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--bg);
+  color: var(--fg);
+  padding: 0.5rem 1rem;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
