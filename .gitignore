@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # obsidian vault config (local only)
 .obsidian/
+
+# private working notes — chat exports, scratch, anything not for the public repo
+private/
