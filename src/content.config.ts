@@ -40,6 +40,7 @@ const essays = defineCollection({
     dek: z.string().optional(),
     threads: z.array(z.string()).optional(),
     tags: z.array(z.string()).optional(),
+    dummy: z.boolean().optional(),
   }),
 });
 
@@ -51,6 +52,7 @@ const threads = defineCollection({
     started: z.date(),
     status: z.enum(['active', 'dormant', 'closed']),
     related: z.array(z.string()).optional(),
+    dummy: z.boolean().optional(),
   }),
 });
 

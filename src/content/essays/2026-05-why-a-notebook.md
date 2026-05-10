@@ -5,6 +5,7 @@ status: draft
 dek: On the difference between writing into a feed and writing into a body of work.
 threads: [web]
 tags: [meta]
+dummy: true
 ---
 
 [Dummy essay — replace with the real first essay.]

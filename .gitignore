@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # private working notes — chat exports, scratch, anything not for the public repo
 private/
+
+# claude code local-only settings (machine-specific overrides)
+.claude/settings.local.json

@@ -1,5 +1,6 @@
 ---
 last_updated: 2026-05-08
+dummy: true
 ---
 
 Building v1 of this site — moving from a single-section project log to the

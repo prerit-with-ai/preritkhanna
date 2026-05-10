@@ -1,0 +1,931 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { frontmatter as nowFrontmatter } from '../content/now.md';
+
+const errands = await getCollection('errands');
+const essays = await getCollection('essays');
+const threads = await getCollection('threads');
+
+const errandCount = errands.length;
+const essayCount = essays.length;
+const essayDummy = essays.filter((e) => e.data.dummy).length;
+const threadCount = threads.length;
+const threadDummy = threads.filter((t) => t.data.dummy).length;
+
+const nowDummy = (nowFrontmatter as { dummy?: boolean }).dummy === true;
+const nowLastUpdated = new Date(nowFrontmatter.last_updated);
+const today = new Date();
+const daysSinceNow = Math.floor(
+  (today.getTime() - nowLastUpdated.getTime()) / (1000 * 60 * 60 * 24)
+);
+const nowStale = daysSinceNow >= 30;
+const nowLabel =
+  daysSinceNow === 0
+    ? 'updated today'
+    : daysSinceNow === 1
+    ? 'updated 1 day ago'
+    : `updated ${daysSinceNow} days ago`;
+
+const formatCount = (label: string, count: number, dummy: number) => {
+  const noun = count === 1 ? label : `${label}s`;
+  if (dummy === 0) return `${count} ${noun}`;
+  if (dummy === count) return `${count} ${noun} (all dummy)`;
+  return `${count} ${noun} (${dummy} dummy)`;
+};
+
+const stats = [
+  formatCount('errand', errandCount, 0),
+  formatCount('essay', essayCount, essayDummy),
+  formatCount('thread', threadCount, threadDummy),
+  `/now ${nowDummy ? '(dummy) ' : ''}${nowLabel}`,
+];
+
+const starterPrompt = `I'm working on preritkhanna.com — my personal site / multi-mode notebook, deployed at https://preritkhanna.pages.dev (auto-deploys on push to main).
+
+Read these docs in order before doing anything:
+1. VISION.md — the why
+2. AGENTS.md — the working agreement (rules + voice + don'ts)
+3. DESIGN.md — visual system + tokens
+4. ARCHITECTURE.md — schemas + technical spine
+5. WORKFLOW.md — operating loop
+6. PRD.md — current phase scope
+7. ROADMAP.md — what's coming
+8. https://preritkhanna.pages.dev/handbook/ — my personal handbook (private/unlinked page, the practical "how to actually use this" layer in my voice)
+
+What I want to do today: [REPLACE WITH TODAY'S TASK]
+
+The non-negotiables (from AGENTS.md):
+- URLs are forever. Don't break /errands/2026-05-ship-v0/ or any other shipped URL.
+- Don't add libraries without asking. The dependency list is small on purpose.
+- Don't ship empty modes. A new section earns its launch by having content.
+- Schemas are gates. Validate at build time. Append-only updates on errands.
+- Voice: earnest, unembarrassed, allergic to performance. Funny is fine; defensive hedging of ambition is not.
+
+Just-in-time handoff rule: Pause and ask whenever a step needs me — picking copy, choosing options, anything outside your sandbox. Don't surprise me, don't batch asks at the start, don't proceed with placeholders. One specific question at the right moment.
+
+Don't push without explicit confirmation. Cloudflare auto-deploys on push to main, so each push is a public release.
+
+Begin by reading the docs. Confirm when done, then propose what to do for today's task.`;
+---
+
+<Base title="Handbook" description="Personal handbook." noindex={true}>
+  <header class="cover">
+    <h1>Handbook</h1>
+    <p class="lede">A note from past me to future me. About this site, and how to use it.</p>
+  </header>
+
+  <hr />
+
+  <article class="prose">
+    <section class="dashboard" aria-label="Quick reference">
+      <p class="dashboard-intro small muted">If you only have 30 seconds, this is the whole site. Read the prose underneath when you need depth.</p>
+
+      <div class="dashboard-block">
+        <h3>Where the site is right now</h3>
+        <p class="stats">
+          {stats.map((s, i) => (
+            <>
+              {i > 0 && <span class="stat-sep" aria-hidden="true"> · </span>}
+              <span class={i === stats.length - 1 && nowStale ? 'stat stale' : 'stat'}>{s}</span>
+            </>
+          ))}
+        </p>
+      </div>
+
+      <div class="dashboard-block">
+        <h3>The loop</h3>
+        <div class="loop">
+          <div class="step">Edit in Obsidian</div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="step">Save</div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="step">Commit all changes</div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="step">Push</div>
+          <span class="arrow" aria-hidden="true">→</span>
+          <div class="step done">Live in ~60s</div>
+        </div>
+      </div>
+
+      <div class="dashboard-block">
+        <h3>The modes (live, with current state)</h3>
+        <div class="modes-grid">
+          <a class="mode-card" href="/">
+            <div class="mode-name">/</div>
+            <p>The cover. Name, intro, "currently," modes list, on-ramp.</p>
+            <span class="mode-status status-dummy">intro is my draft</span>
+          </a>
+          <a class="mode-card" href="/about/">
+            <div class="mode-name">/about</div>
+            <p>The self. Origin, beliefs, influences, reversals, colophon.</p>
+            <span class="mode-status status-dummy">mostly dummy</span>
+          </a>
+          <a class="mode-card" href="/errands/">
+            <div class="mode-name">/errands</div>
+            <p>Projects in motion. The trunk. Each errand is one URL forever.</p>
+            <span class="mode-status status-live">real content</span>
+          </a>
+          <a class="mode-card" href="/essays/">
+            <div class="mode-name">/essays</div>
+            <p>Long-form thinking. Drafts are labeled, never hidden.</p>
+            <span class="mode-status status-dummy">first essay dummy</span>
+          </a>
+          <a class="mode-card" href="/threads/">
+            <div class="mode-name">/threads</div>
+            <p>Narrated domains. Each has a "why this pulls me" body.</p>
+            <span class="mode-status status-dummy">all 3 dummy</span>
+          </a>
+          <a class="mode-card" href="/now/">
+            <div class="mode-name">/now</div>
+            <p>Current snapshot. Update whenever something changes.</p>
+            <span class="mode-status status-dummy">dummy</span>
+          </a>
+          <a class="mode-card" href="/guild/">
+            <div class="mode-name">/guild</div>
+            <p>The recruiting layer. Crew Calls auto-aggregates from errands.</p>
+            <span class="mode-status status-dummy">boons + conversations dummy</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="dashboard-block">
+        <h3>The discipline (the rules behind everything)</h3>
+        <div class="discipline-pills">
+          <span class="pill">URLs are forever</span>
+          <span class="pill">Empty modes don't ship</span>
+          <span class="pill">Updates are append-only</span>
+          <span class="pill">State ambition flat</span>
+          <span class="pill">No empty frontmatter</span>
+          <span class="pill">After phase ships, write before building</span>
+        </div>
+      </div>
+
+      <div class="dashboard-block">
+        <h3>What goes where (decision tree)</h3>
+        <table class="decision">
+          <tbody>
+            <tr><td>A new project</td><td>→</td><td><a href="/errands/"><code>/errands/</code></a> &nbsp; <code>YYYY-MM-slug.md</code></td></tr>
+            <tr><td>A piece of long-form writing</td><td>→</td><td><a href="/essays/"><code>/essays/</code></a> &nbsp; <code>YYYY-MM-slug.md</code></td></tr>
+            <tr><td>A new domain you keep returning to</td><td>→</td><td><a href="/threads/"><code>/threads/</code></a> &nbsp; <code>slug.md</code> (no date)</td></tr>
+            <tr><td>"Where I am right now"</td><td>→</td><td>edit <code>src/content/now.md</code></td></tr>
+            <tr><td>A new offer or open conversation</td><td>→</td><td>edit <code>src/pages/guild/boons.astro</code> or <code>conversations.astro</code></td></tr>
+            <tr><td>An update to an existing project</td><td>→</td><td>append to that errand's <code>updates</code> array</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="dashboard-block">
+        <h3>Starter prompt for new Claude Code sessions</h3>
+        <p class="prompt-help small muted">Paste this when opening a new session. Replace the <code>[REPLACE WITH TODAY'S TASK]</code> line.</p>
+        <div class="prompt-wrap">
+          <button id="copy-prompt" class="copy-btn" type="button" data-default="Copy prompt" data-copied="Copied">Copy prompt</button>
+          <pre class="prompt-box" id="prompt-text">{starterPrompt}</pre>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const btn = document.getElementById('copy-prompt');
+      const text = document.getElementById('prompt-text');
+      if (btn && text) {
+        btn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(text.textContent || '');
+            const copied = btn.getAttribute('data-copied') || 'Copied';
+            const original = btn.getAttribute('data-default') || 'Copy prompt';
+            btn.textContent = copied;
+            setTimeout(() => {
+              btn.textContent = original;
+            }, 1600);
+          } catch (e) {
+            btn.textContent = 'Copy failed';
+          }
+        });
+      }
+    </script>
+
+    <section>
+      <h2>Welcome back</h2>
+      <p>
+        If you're reading this, you've probably been away for a while. You
+        forgot what this site is. You forgot what the modes are for. You
+        forgot how to add a new errand without breaking the build. You're
+        looking at the file tree wondering what half of it does.
+      </p>
+      <p>
+        That's fine. This page is the way back. Read it slowly, in order
+        the first time. After that, skip to the section you need.
+      </p>
+      <p>
+        Two things to remember before we go further. <strong>One:</strong>
+        the site exists for you, not for an audience. The audience is a
+        side-effect of doing the work honestly. <strong>Two:</strong> you
+        don't have to do everything at once. Most weeks you don't even
+        have to open this file. The site is a notebook; notebooks reward
+        slowness.
+      </p>
+    </section>
+
+    <section>
+      <h2>What this site is, in one paragraph</h2>
+      <p>
+        preritkhanna.com is a multi-mode notebook. It's a single site with
+        many sections — projects in motion (errands), long-form writing
+        (essays), narrated domains you keep returning to (threads), a
+        live snapshot of your present (now), the guild hall where
+        collaborators find you (guild), and an evolving picture of who
+        you are (about). Eventually it grows to include the things you've
+        noticed but not yet engaged with (radar), the canon you'd press
+        into someone's hand (library), the books you're processing now
+        (learning), the quotes that hit (commonplace), the principles you
+        actually live by (principles), the first-principles distillations
+        of fields (foundations), and short notes on the world
+        (dispatches). Right now only the first set is shipped. The rest
+        ship as you grow into them.
+      </p>
+      <p>
+        The site is built on three commitments that are non-negotiable:
+        markdown files in git as the spine, URLs that never change once
+        published, and schemas as gates that keep content honest. The
+        rest is decoration.
+      </p>
+    </section>
+
+    <section>
+      <h2>The shape, right now</h2>
+      <p>
+        These are the modes that exist as of today. Each one has a
+        specific purpose and a specific kind of writing that goes in. Don't
+        try to make one mode do another mode's job — when in doubt, the
+        wrong-but-clean home for a piece is better than no home at all,
+        and you can move it later.
+      </p>
+
+      <h3>/ — the home</h3>
+      <p>
+        The cover of the notebook. Your name, an intro paragraph that
+        names the multi-thing, a one-line "currently" that's actually
+        true, a list of the active modes, and a small "if you're new"
+        on-ramp. It updates rarely. The intro should be the most
+        confident sentence on the site — it sets the voice for everything
+        else. If you're tempted to hedge it, don't. State the ambition
+        flatly. Naruto says he'll be Hokage flatly.
+      </p>
+
+      <h3>/about — the self</h3>
+      <p>
+        Where readers (and you) get a real picture. Origin (how you got
+        here), beliefs (a handful of crisp things you actually think),
+        influences (Naruto, Luffy, Da Vinci by name; plus a small list of
+        humans whose work models pieces of you), reversals (a running
+        list of "I changed my mind about X"), acknowledgments (real
+        humans who saw something in you, with permission), an FAQ (small,
+        can be empty), and a colophon (what the site is, why this form,
+        what it's built with). The reversals section is the most
+        interesting one — most people leave it off because admitting you
+        were wrong is uncomfortable. Keep it. It's proof you're still
+        thinking.
+      </p>
+
+      <h3>/errands — Fool's Errand</h3>
+      <p>
+        Projects. The ones in motion, the ones cooking, the ones
+        abandoned. Each errand is one URL that follows the project from
+        start to its end-state. The pitch goes in the body — what this
+        is, why, what done looks like. The build log goes in the
+        <code>updates</code> array, dated, append-only. Decisions and
+        gotchas go inline in updates. Code lives in the linked repo, not
+        in the errand. Long-form synthesis becomes an essay tagged with
+        the errand. Books read for the project go in /learning when
+        that's shipped.
+      </p>
+      <p>
+        The errand is the trunk. Other modes are the branches. When you
+        ship one, append a final update with what shipped and what
+        surprised you. When you abandon one, append a final update with
+        the actual reason — be specific. <em>"Lost the energy"</em> isn't
+        enough. <em>"The dependency I was relying on got abandoned and
+        the rewrite cost more than the project was worth"</em> is enough.
+      </p>
+
+      <h3>/essays</h3>
+      <p>
+        Long-form thinking. Often retrospective on errands. Drafts are
+        allowed and labeled as such — don't hide drafts; the
+        forcing-function only works if the unfinished is visible.
+        Essays are where voice gets calibrated; the first essay sets the
+        tone for the whole site. Don't write a manifesto for the first
+        one. Write something honest and small.
+      </p>
+
+      <h3>/threads</h3>
+      <p>
+        These are the differentiator. Other polymath sites use tags;
+        threads are <em>narrated</em> domains. Each thread you add has a
+        2–5 paragraph "why this thread pulls me" body in voice. Then
+        every entry across the site that's tagged with this thread
+        aggregates onto the thread's page automatically. So a stranger
+        reading any one piece can immediately see the surrounding
+        intellectual context.
+      </p>
+      <p>
+        Don't add a thread until an interest has earned a name. Tags can
+        proliferate cheaply; threads should not. A thread without a body
+        is just a tag with airs.
+      </p>
+
+      <h3>/now</h3>
+      <p>
+        A single page that says where you are right now. What you're
+        building, what you're reading, what you're chewing on, where you
+        physically are if relevant. Update it whenever something changes.
+        It's fragmentary and intimate by design. Don't write it like a
+        status report. Write it like a postcard to a friend.
+      </p>
+
+      <h3>/guild</h3>
+      <p>
+        The recruiting layer. Three sub-pages. <strong>Crew Calls</strong>
+        auto-aggregates from any errand with a <code>looking_for</code>
+        field — so if you mention you'd like a collaborator on an errand,
+        the recruiting ask shows up in the Guild automatically. You don't
+        maintain it separately. <strong>Boons</strong> is what you offer
+        — the things you'll help with, the things you know enough to be
+        useful at. <strong>Conversations</strong> is standing invitations
+        to talk about specific topics, no agenda required.
+      </p>
+      <p>
+        The Luffy frame is: you assemble your crew by helping with
+        their quests first. Boons is where you make that real.
+      </p>
+    </section>
+
+    <section>
+      <h2>The operating loop</h2>
+      <p>
+        This is the entire workflow when you sit down to write or update
+        something. It runs on Obsidian + Obsidian Git + Templater, all
+        configured in the project vault.
+      </p>
+      <ol>
+        <li>Open Obsidian. The vault is the project folder.</li>
+        <li>Edit a markdown file (or create a new one — folder templates auto-apply the right shape).</li>
+        <li>Save (Ctrl+S).</li>
+        <li>Command palette (Ctrl+P) → <em>Obsidian Git: Commit all changes</em> → type a message.</li>
+        <li>Command palette → <em>Obsidian Git: Push</em>.</li>
+        <li>Wait ~60 seconds. Cloudflare rebuilds and deploys to the live site.</li>
+      </ol>
+      <p>
+        That's it. Most of the time you don't open a coding agent at all.
+        Coding agents come out only when you want to <em>change the site
+        itself</em> — add a new mode, change a layout, add a feature.
+        Adding content is just markdown + git push.
+      </p>
+      <p>
+        One caveat to remember: <em>Commit all changes</em> stages every
+        untracked file in the repo that isn't in <code>.gitignore</code>.
+        If you ever drop a stray file at the project root (chat export,
+        scratch note, screenshot), the next "commit all" will sweep it
+        into a public commit. The safe pattern is: anything you don't
+        want public goes in the <code>private/</code> folder, which is
+        already gitignored.
+      </p>
+    </section>
+
+    <section>
+      <h2>How to add a thing — the short version</h2>
+      <p>
+        Right-click the right folder in Obsidian's file tree. New note.
+        Name it correctly (see the conventions just below). The template
+        auto-applies. Fill in the frontmatter. Write the body. Commit, push.
+      </p>
+      <p>
+        Filename conventions, internalized once and never thought about
+        again:
+      </p>
+      <ul>
+        <li>Errand: <code>YYYY-MM-slug.md</code> in <code>src/content/errands/</code>. All lowercase, hyphens, no spaces, no caps.</li>
+        <li>Essay: <code>YYYY-MM-slug.md</code> in <code>src/content/essays/</code>. Same rules.</li>
+        <li>Thread: <code>slug.md</code> in <code>src/content/threads/</code> — no date prefix, threads are evergreen.</li>
+        <li>Now: just edit the existing <code>src/content/now.md</code>.</li>
+      </ul>
+      <p>
+        The filename becomes the URL forever. Pick the slug carefully. A
+        bad slug now means a bad URL forever, or a redirect later.
+      </p>
+    </section>
+
+    <section>
+      <h2>The frontmatter, and why it matters</h2>
+      <p>
+        Every markdown file in <code>src/content/</code> starts with a
+        YAML block between two <code>---</code> lines. This is called
+        frontmatter, and it's the structured handle the site uses to
+        understand what kind of thing this file is. Title, date, status,
+        tags, threads — they all live in frontmatter. The body below
+        is what gets rendered as the page.
+      </p>
+      <p>
+        Three rules that will save you from 95% of build failures:
+      </p>
+      <ul>
+        <li>
+          <strong>Dates are YAML dates, not strings.</strong> Write
+          <code>date: 2026-05-10</code>, not <code>date: "2026-05-10"</code>.
+          The quotes turn it into a string and the schema rejects it.
+        </li>
+        <li>
+          <strong>Empty optional fields get deleted, not left blank.</strong>
+          If the errand isn't looking for a collaborator yet, delete the
+          <code>looking_for:</code> line entirely. Leaving it as
+          <code>looking_for:</code> with no value parses as null and
+          breaks the build.
+        </li>
+        <li>
+          <strong>Status enums are lowercase.</strong>
+          <code>cooking</code>, not <code>Cooking</code>. The schema is
+          strict about this on purpose — it makes the data honest.
+        </li>
+      </ul>
+      <p>
+        For the full schema for each mode, see <code>src/content.config.ts</code>
+        in the repo. Or see ARCHITECTURE.md, which has them written out.
+      </p>
+    </section>
+
+    <section>
+      <h2>How the dummy stats work</h2>
+      <p>
+        The "Where the site is right now" line at the top of this page
+        auto-counts your content. It also flags how many entries are
+        still scaffold-quality writing rather than the real thing. The
+        mechanism is one frontmatter field: <code>dummy: true</code>.
+      </p>
+      <p>
+        <strong>When you replace dummy content with the real version</strong>
+        — finally write the real first essay, finally write the
+        "why this thread pulls me" body, finally update <code>/now</code>
+        with what's actually true — just delete the <code>dummy: true</code>
+        line from that file's frontmatter. The stats will reflect it on
+        the next deploy. No counter to update manually, no checklist to
+        maintain anywhere else.
+      </p>
+      <p>
+        <strong>When you scaffold a new thing but haven't written the
+        real body yet</strong> — say you've named a new thread but the
+        body is still a placeholder — add <code>dummy: true</code> to
+        the frontmatter. The stats start counting it as dummy
+        immediately. When the body is real, drop the line.
+      </p>
+      <p>
+        Schemas where the <code>dummy</code> field is currently active:
+        essays, threads, and <code>now.md</code>. Add it to other
+        collection schemas in <code>src/content.config.ts</code> if you
+        want the same treatment elsewhere.
+      </p>
+    </section>
+
+    <section>
+      <h2>The discipline (the part that's actually hard)</h2>
+      <p>
+        The technical setup is easy. Discipline is the hard part. These
+        rules are designed in. They keep the site honest over years.
+        Soften them and the site degrades into a personal-brand vehicle.
+      </p>
+      <p>
+        <strong>URLs are forever.</strong> Once a piece is published, its
+        URL never changes. If you want to rename a slug, you ship a
+        redirect. Sites that survive decades respect their URLs. Don't
+        be sloppy here.
+      </p>
+      <p>
+        <strong>Empty modes don't ship.</strong> A path is created the day
+        it gets its first real entry. Don't add /library before there's a
+        book, don't add /commonplace before there's a quote. The shape
+        of the site at any moment should match the actual content.
+      </p>
+      <p>
+        <strong>Updates are append-only.</strong> When you update an
+        errand, you append to the <code>updates</code> array. You never
+        edit a past update to revise history. If something was wrong,
+        you add a new update saying so. The site is the audit log of
+        your own thinking. Don't lie to it.
+      </p>
+      <p>
+        <strong>The unfinished is visible on purpose.</strong> Drafts are
+        labeled drafts. Abandoned errands keep their abandonment notes.
+        <code>cooking</code> projects don't pretend they're shipped. The
+        forcing-function only works if the incomplete is on display.
+      </p>
+      <p>
+        <strong>Voice: state the ambition flat.</strong> The site lives
+        or dies on voice. Earnest, unembarrassed, allergic to
+        performance. Self-deprecating humor is fine — that's craft.
+        Defensive self-deprecation is not — that's a tic. <em>"I'm
+        trying to be many things at once"</em> is the energy. <em>"I'm
+        just a humble guy lol probably won't make it but"</em> is not.
+        If you find yourself adding qualifiers before stating the
+        ambition, delete them.
+      </p>
+      <p>
+        <strong>After a phase ships, stop building.</strong> The
+        temptation is to keep adding modes, redesigning, reworking. The
+        rule from VISION.md: after each phase ships, no site work until
+        you've added at least three new entries across existing modes.
+        Eat the dogfood. Live in the site before you renovate it again.
+      </p>
+    </section>
+
+    <section>
+      <h2>Pitfalls you've already hit (so you don't again)</h2>
+      <p>
+        <strong>The .txt-at-the-root pitfall.</strong> You exported a
+        chat log from a coding session and left the .txt file at the
+        project root. Obsidian Git's "commit all" swept it into a public
+        commit. The chat log was now on GitHub. The fix took a force-push
+        and a history rewrite. The lesson: anything that's not for the
+        public site goes in <code>private/</code> immediately. The folder
+        is gitignored; nothing inside it can ever leak.
+      </p>
+      <p>
+        <strong>The empty-frontmatter pitfall.</strong> You created an
+        errand in Obsidian without using the template, left
+        <code>tagline:</code> blank, and pushed. Cloudflare's deploy
+        failed with a Zod validation error. The site stayed on the
+        previous build until you fixed the frontmatter. The lesson:
+        always use the template (right-click in the right folder; the
+        folder template auto-applies), and never push if a frontmatter
+        field is empty.
+      </p>
+      <p>
+        <strong>The capitalized-filename pitfall.</strong> You named an
+        errand file <code>Portfolio Site - preritkhanna.com.md</code>.
+        That filename becomes the URL, with spaces URL-encoded as
+        <code>%20</code>. Hideous when shared. The lesson: always
+        lowercase, hyphens, <code>YYYY-MM-</code> date prefix for dated
+        modes. The title field in frontmatter can be anything pretty;
+        the filename has to be a clean slug.
+      </p>
+    </section>
+
+    <section>
+      <h2>If something breaks</h2>
+      <p>
+        Almost every breakage is one of two things: frontmatter
+        validation, or git/push trouble. Walk through these in order.
+      </p>
+      <p>
+        <strong>If the live site stops updating after a push:</strong>
+        check Cloudflare Pages' deploy log. The deploy probably failed
+        with a Zod error. The error message names the file and the
+        field. Open the file, fix the frontmatter, push again.
+      </p>
+      <p>
+        <strong>If you want to verify before pushing:</strong> run
+        <code>npm run build</code> in the project folder. If it passes
+        locally, it'll pass on Cloudflare. If it fails, the error tells
+        you what to fix.
+      </p>
+      <p>
+        <strong>If Obsidian Git refuses to push:</strong> usually a sync
+        issue — pull first (<em>Obsidian Git: Pull</em>), resolve any
+        conflicts, then push. If you're working from one machine only,
+        conflicts shouldn't happen; if they do, it means you committed
+        from somewhere else (or you have a stale state).
+      </p>
+      <p>
+        <strong>If you accidentally committed something private:</strong>
+        don't panic. Tell a coding agent immediately, before pushing
+        again. If it's already pushed, a force-push with history rewrite
+        can scrub it from the public repo (this is what we did with the
+        .txt file). If the content was sensitive in a way that needed
+        rotation (a real secret, not just personal notes), rotate it
+        regardless — once something is on GitHub even briefly, assume
+        it was scraped.
+      </p>
+    </section>
+
+    <section>
+      <h2>The cadence</h2>
+      <p>
+        Most of the rhythm of the site is "update when something
+        changes." A few cadences are real and worth respecting:
+      </p>
+      <p>
+        <strong>Whenever something changes:</strong> update /now.
+        Append to the relevant errand's updates. If you noticed a person
+        or a book or a topic worth remembering, add it to /radar (when
+        that's shipped).
+      </p>
+      <p>
+        <strong>Monthly:</strong> write a short reflection essay,
+        tagged <code>monthly</code>, dated the last day of the month.
+        Look at /garden and abandon what's been stale honestly. This is
+        the smallest non-negotiable rhythm. Skipping it once is fine.
+        Skipping it for three months means you've drifted; the next one
+        is non-negotiable.
+      </p>
+      <p>
+        <strong>Quarterly:</strong> refresh the "If you're new" picks on
+        the home page. Look at /bucketlist if shipped. If your thinking
+        has shifted on something, add a /about reversal entry.
+      </p>
+      <p>
+        <strong>Annually (December):</strong> write the annual
+        reflection essay, tagged <code>annual</code>. This one is
+        sacred. It's the story anchor. Re-read all twelve monthly
+        reflections first; the annual is the synthesis. Major review of
+        /threads (which are still alive?), of /about (does it still
+        describe me?), of /library (what earned canon this year?).
+      </p>
+    </section>
+
+    <section>
+      <h2>The reading list (for when you want depth on something)</h2>
+      <p>
+        Each of the public docs at the root of the repo has a job. When
+        you want to remember <em>why</em>, not <em>how</em>, open one of
+        these.
+      </p>
+      <ul>
+        <li><strong>VISION.md</strong> — when you forget why the site is shaped this way.</li>
+        <li><strong>AGENTS.md</strong> — before any AI coding session. The working agreement.</li>
+        <li><strong>DESIGN.md</strong> — when making a visual change. Token system, type, color, spacing.</li>
+        <li><strong>ARCHITECTURE.md</strong> — when adding a mode, changing a schema, or touching the technical spine.</li>
+        <li><strong>WORKFLOW.md</strong> — when your loop has drifted and you want to remember the canonical way.</li>
+        <li><strong>PRD.md</strong> — when starting a new phase build. It always describes the current phase only.</li>
+        <li><strong>ROADMAP.md</strong> — when wondering what comes after the current phase.</li>
+      </ul>
+      <p>
+        This handbook (the one you're reading) is the practical layer
+        that sits on top of all of those. The public docs say what and
+        why. This page says <em>how to actually do it</em>.
+      </p>
+    </section>
+
+    <section>
+      <h2>One last thing</h2>
+      <p>
+        You built this site to be able to be many things at once,
+        publicly, without performing any of them. Most weeks the work is
+        small — a paragraph in /now, a quote in /commonplace when that
+        ships, a sentence appended to an errand. Some weeks the work is
+        bigger — an essay, a new thread, a phase shipping. Both kinds of
+        weeks are the work.
+      </p>
+      <p>
+        The site is not the goal. The site is the place the goal lives.
+        The goal is to be the kind of person who, in twenty years, has
+        a real notebook full of real thinking across many domains —
+        because they actually did the work — and can point at it.
+      </p>
+      <p>
+        Don't lose the thread. Write the next paragraph.
+      </p>
+    </section>
+
+    <hr />
+
+    <p class="small muted">
+      This handbook updates only when a feature ships. If something here
+      describes a mode that doesn't exist yet, the handbook is wrong;
+      fix it.
+    </p>
+  </article>
+</Base>
+
+<style>
+  .cover h1 {
+    font-size: var(--type-3xl);
+    margin: 0 0 var(--space-3);
+  }
+  .lede {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: var(--type-xl);
+    color: var(--muted);
+    margin: 0;
+  }
+  .prose section {
+    margin-top: var(--space-7);
+  }
+  .prose section:first-child {
+    margin-top: 0;
+  }
+  .prose h2 {
+    margin-top: 0;
+    font-size: var(--type-2xl);
+  }
+  .prose h3 {
+    font-size: var(--type-lg);
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-2);
+  }
+  .prose p + p {
+    margin-top: var(--space-4);
+  }
+  .prose ol,
+  .prose ul {
+    padding-left: 1.5rem;
+  }
+  .prose li {
+    margin: var(--space-2) 0;
+  }
+
+  /* Dashboard ------------------------------------------------------------ */
+  .dashboard {
+    margin-top: 0;
+    margin-bottom: var(--space-7);
+    padding-bottom: var(--space-7);
+    border-bottom: 1px solid var(--rule);
+  }
+  .dashboard-intro {
+    margin: 0 0 var(--space-6);
+  }
+  .dashboard-block {
+    margin-top: var(--space-6);
+  }
+  .dashboard-block:first-of-type {
+    margin-top: 0;
+  }
+  .dashboard-block h3 {
+    font-family: var(--sans);
+    font-size: var(--type-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin: 0 0 var(--space-3);
+    padding: 0;
+  }
+
+  /* The loop */
+  .loop {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .step {
+    font-family: var(--sans);
+    font-size: var(--type-xs);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--rule);
+    background: var(--bg);
+    line-height: 1.2;
+  }
+  .step.done {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .arrow {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: var(--type-base);
+  }
+
+  /* Modes grid */
+  .modes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-3);
+  }
+  .mode-card {
+    display: block;
+    padding: var(--space-4);
+    border: 1px solid var(--rule);
+    text-decoration: none;
+    color: var(--fg);
+    transition: border-color 0.15s ease;
+  }
+  .mode-card:hover {
+    border-color: var(--accent);
+  }
+  .mode-card .mode-name {
+    font-family: var(--mono);
+    font-size: var(--type-sm);
+    margin-bottom: var(--space-2);
+    color: var(--fg);
+  }
+  .mode-card p {
+    font-family: var(--serif);
+    font-size: var(--type-xs);
+    margin: 0 0 var(--space-2);
+    line-height: 1.5;
+    color: var(--fg);
+  }
+  .mode-status {
+    display: inline-block;
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .mode-status.status-live { color: var(--accent); }
+  .mode-status.status-dummy {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Discipline pills */
+  .discipline-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .pill {
+    font-family: var(--sans);
+    font-size: var(--type-xs);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    color: var(--muted);
+    line-height: 1.2;
+  }
+
+  /* Stats line */
+  .stats {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: var(--type-xs);
+    line-height: 1.7;
+  }
+  .stat {
+    color: var(--fg);
+  }
+  .stat.stale {
+    color: var(--muted);
+    font-style: italic;
+  }
+  .stat-sep {
+    color: var(--muted);
+  }
+
+  /* Starter prompt block */
+  .prompt-help {
+    margin: 0 0 var(--space-3);
+  }
+  .prompt-wrap {
+    position: relative;
+  }
+  .copy-btn {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    font-family: var(--sans);
+    font-size: var(--type-xs);
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--rule);
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+    border-radius: 3px;
+    line-height: 1.2;
+  }
+  .copy-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .prompt-box {
+    background: var(--rule);
+    padding: var(--space-4);
+    padding-right: 7rem;
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    max-height: 24rem;
+    overflow-y: auto;
+  }
+
+  /* Decision table */
+  .decision {
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: var(--type-xs);
+    width: 100%;
+  }
+  .decision td {
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .decision tr:last-child td {
+    border-bottom: 0;
+  }
+  .decision td:first-child {
+    color: var(--muted);
+    width: 50%;
+  }
+  .decision td:nth-child(2) {
+    color: var(--muted);
+    width: 1.5rem;
+    text-align: center;
+  }
+  .decision code {
+    font-size: 0.95em;
+  }
+</style>

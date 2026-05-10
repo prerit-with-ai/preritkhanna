@@ -5,9 +5,10 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title: string;
   description?: string;
+  noindex?: boolean;
 }
 
-const { title, description = "Prerit Khanna's notebook." } = Astro.props;
+const { title, description = "Prerit Khanna's notebook.", noindex = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,6 +18,7 @@ const { title, description = "Prerit Khanna's notebook." } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
   </head>

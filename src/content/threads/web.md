@@ -4,6 +4,7 @@ slug: web
 started: 2026-05-08
 status: active
 related: [ai-safety]
+dummy: true
 ---
 
 The web is the medium I keep returning to because it's the cheapest form of
